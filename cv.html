@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAOR KREICMAN :: PLAYER PROFILE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+  <style>
+    /* =====================================================
+       ROOT VARIABLES
+    ===================================================== */
+    :root {
+      --bg:         #05050f;
+      --bg-card:    #09091e;
+      --bg-card2:   #0d0d28;
+      --green:      #00e676;
+      --green-dim:  #005c30;
+      --cyan:       #00e5ff;
+      --cyan-dim:   #005f70;
+      --yellow:     #ffe600;
+      --magenta:    #e040fb;
+      --orange:     #ff9100;
+      --red:        #ff1744;
+      --white:      #e8eaf6;
+      --gray:       #546e7a;
+      --gray-light: #90a4ae;
+
+      --glow-green:   0 0 6px #00e676, 0 0 14px rgba(0,230,118,0.4);
+      --glow-cyan:    0 0 6px #00e5ff, 0 0 14px rgba(0,229,255,0.4);
+      --glow-yellow:  0 0 6px #ffe600, 0 0 14px rgba(255,230,0,0.4);
+      --glow-magenta: 0 0 6px #e040fb, 0 0 14px rgba(224,64,251,0.4);
+      --glow-orange:  0 0 6px #ff9100, 0 0 14px rgba(255,145,0,0.4);
+    }
+
+    /* =====================================================
+       RESET & BASE
+    ===================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--green);
+      font-family: 'VT323', monospace;
+      font-size: 19px;
+      line-height: 1.6;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* =====================================================
+       CRT EFFECTS
+    ===================================================== */
+    /* Scanlines */
+    body::before {
+      content: '';
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.12) 2px,
+        rgba(0,0,0,0.12) 4px
+      );
+      pointer-events: none;
+      z-index: 9000;
+    }
+
+    /* Vignette */
+    body::after {
+      content: '';
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.75) 100%);
+      pointer-events: none;
+      z-index: 9001;
+    }
+
+    /* =====================================================
+       LAYOUT
+    ===================================================== */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 20px 40px;
+    }
+
+    /* =====================================================
+       PIXEL BOX (card component)
+    ===================================================== */
+    .pixel-box {
+      position: relative;
+      margin-bottom: 18px;
+      background: var(--bg-card);
+      border: 2px solid var(--green);
+      box-shadow: var(--glow-green), inset 0 0 40px rgba(0,230,118,0.02);
+    }
+
+    .pixel-box.cyan {
+      border-color: var(--cyan);
+      box-shadow: var(--glow-cyan), inset 0 0 40px rgba(0,229,255,0.02);
+    }
+    .pixel-box.yellow {
+      border-color: var(--yellow);
+      box-shadow: var(--glow-yellow), inset 0 0 40px rgba(255,230,0,0.02);
+    }
+
+    /* Pixel corners */
+    .pixel-box::before {
+      content: '';
+      position: absolute; top: -2px; left: -2px;
+      width: 10px; height: 10px;
+      background: var(--bg);
+      border-right: 2px solid inherit;
+      border-bottom: 2px solid inherit;
+      z-index: 1;
+    }
+    .pixel-box.cyan::before { border-right-color: var(--cyan); border-bottom-color: var(--cyan); }
+    .pixel-box.yellow::before { border-right-color: var(--yellow); border-bottom-color: var(--yellow); }
+
+    /* =====================================================
+       SECTION HEADER BAR
+    ===================================================== */
+    .section-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 18px;
+      background: var(--bg-card2);
+      border-bottom: 2px solid var(--yellow);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: var(--yellow);
+      text-shadow: var(--glow-yellow);
+      letter-spacing: 2px;
+    }
+
+    .section-bar .icon {
+      color: var(--orange);
+      animation: blink 1.2s step-end infinite;
+      font-style: normal;
+    }
+
+    /* =====================================================
+       HEADER / PLAYER PROFILE
+    ===================================================== */
+    .header-box {
+      border-color: var(--cyan);
+      box-shadow: var(--glow-cyan), inset 0 0 60px rgba(0,229,255,0.02);
+      animation: flicker 10s infinite;
+    }
+
+    .header-inner {
+      padding: 32px 28px 24px;
+      text-align: center;
+    }
+
+    .player-select-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      color: var(--gray);
+      letter-spacing: 5px;
+      margin-bottom: 14px;
+      animation: blink 1.5s step-end infinite;
+    }
+
+    .player-name {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(16px, 3vw, 26px);
+      color: var(--cyan);
+      text-shadow: var(--glow-cyan), 0 0 40px rgba(0,229,255,0.3);
+      letter-spacing: 4px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .player-class {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(6px, 1.2vw, 9px);
+      color: var(--orange);
+      text-shadow: var(--glow-orange);
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .available-badge {
+      display: inline-block;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      color: var(--green);
+      border: 1px solid var(--green);
+      padding: 4px 10px;
+      margin-bottom: 20px;
+      animation: blink 1.8s step-end infinite;
+      text-shadow: var(--glow-green);
+    }
+
+    .contact-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 18px;
+      font-family: 'VT323', monospace;
+      font-size: 20px;
+      color: var(--green);
+    }
+
+    .contact-row a {
+      color: var(--green);
+      text-decoration: none;
+      transition: color 0.2s, text-shadow 0.2s;
+    }
+    .contact-row a:hover {
+      color: var(--cyan);
+      text-shadow: var(--glow-cyan);
+    }
+
+    .contact-sep { color: var(--gray); user-select: none; }
+
+    /* =====================================================
+       PLAYER STATS BAR
+    ===================================================== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 14px 8px;
+      border-right: 1px solid var(--green-dim);
+      background: rgba(0,230,118,0.02);
+    }
+    .stat-item:last-child { border-right: none; }
+
+    .stat-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 6px;
+      color: var(--gray);
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(10px, 2vw, 16px);
+      color: var(--yellow);
+      text-shadow: var(--glow-yellow);
+    }
+
+    .stat-sub {
+      font-family: 'VT323', monospace;
+      font-size: 15px;
+      color: var(--gray-light);
+      margin-top: 3px;
+    }
+
+    /* =====================================================
+       SUMMARY / MISSION BRIEFING
+    ===================================================== */
+    .summary-body {
+      padding: 18px 22px;
+      color: var(--white);
+      font-size: 20px;
+      line-height: 1.75;
+    }
+
+    .summary-body p::before {
+      content: '> ';
+      color: var(--green);
+      font-family: 'VT323', monospace;
+    }
+
+    /* =====================================================
+       SKILLS / ARSENAL
+    ===================================================== */
+    .skills-body {
+      padding: 18px 22px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px 32px;
+    }
+
+    .skill-category-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      color: var(--magenta);
+      text-shadow: var(--glow-magenta);
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(224,64,251,0.25);
+    }
+
+    .skill-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+
+    .skill-name {
+      font-family: 'VT323', monospace;
+      font-size: 18px;
+      color: var(--white);
+      flex: 0 0 190px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .skill-bar-bg {
+      flex: 1;
+      height: 11px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--green-dim);
+      overflow: hidden;
+    }
+
+    .skill-bar-fill {
+      height: 100%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      width: 0;
+      transition: width 1.2s ease-out;
+    }
+
+    .skill-pct {
+      font-family: 'VT323', monospace;
+      font-size: 16px;
+      color: var(--yellow);
+      flex: 0 0 36px;
+      text-align: right;
+    }
+
+    .tools-row {
+      grid-column: 1 / -1;
+      border-top: 1px solid var(--green-dim);
+      padding-top: 14px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tools-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      color: var(--magenta);
+      text-shadow: var(--glow-magenta);
+    }
+
+    .tool-tag {
+      font-family: 'VT323', monospace;
+      font-size: 17px;
+      color: var(--cyan);
+      border: 1px solid var(--cyan-dim);
+      padding: 2px 10px;
+      background: rgba(0,229,255,0.04);
+    }
+
+    /* =====================================================
+       EXPERIENCE / QUEST LOG
+    ===================================================== */
+    .quest-entry {
+      padding: 18px 22px;
+      border-bottom: 1px solid rgba(0,230,118,0.1);
+    }
+    .quest-entry:last-child { border-bottom: none; }
+
+    .quest-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 2px;
+    }
+
+    .quest-company {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(8px, 1.5vw, 10px);
+      color: var(--cyan);
+      text-shadow: var(--glow-cyan);
+    }
+
+    .quest-date {
+      font-family: 'VT323', monospace;
+      font-size: 19px;
+      color: var(--magenta);
+    }
+
+    .quest-meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .quest-role {
+      font-family: 'VT323', monospace;
+      font-size: 21px;
+      color: var(--orange);
+    }
+
+    .quest-location {
+      font-family: 'VT323', monospace;
+      font-size: 17px;
+      color: var(--gray-light);
+    }
+
+    .quest-badge {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 6px;
+      padding: 3px 8px;
+      border: 1px solid;
+      display: inline-block;
+    }
+    .badge-active   { border-color: var(--green);   color: var(--green);   animation: blink 2s step-end infinite; }
+    .badge-done     { border-color: var(--gray);    color: var(--gray); }
+    .badge-legendary{ border-color: var(--yellow);  color: var(--yellow);  text-shadow: var(--glow-yellow); }
+
+    .quest-bullets {
+      list-style: none;
+      padding: 0;
+    }
+    .quest-bullets li {
+      font-family: 'VT323', monospace;
+      font-size: 19px;
+      color: var(--white);
+      padding: 2px 0 2px 22px;
+      position: relative;
+      line-height: 1.55;
+    }
+    .quest-bullets li::before {
+      content: '»';
+      position: absolute;
+      left: 4px;
+      color: var(--green);
+    }
+
+    /* =====================================================
+       EDUCATION & LANGUAGES
+    ===================================================== */
+    .edu-body {
+      padding: 18px 22px;
+    }
+
+    .edu-school {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(7px, 1.4vw, 9px);
+      color: var(--cyan);
+      line-height: 1.7;
+      margin-bottom: 6px;
+    }
+
+    .edu-degree {
+      font-family: 'VT323', monospace;
+      font-size: 21px;
+      color: var(--orange);
+      margin-bottom: 2px;
+    }
+
+    .edu-date {
+      font-family: 'VT323', monospace;
+      font-size: 18px;
+      color: var(--gray-light);
+    }
+
+    .lang-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding: 18px 22px;
+    }
+
+    .lang-item {
+      text-align: center;
+      padding: 14px 10px;
+      border: 1px solid var(--green-dim);
+      background: rgba(0,230,118,0.02);
+    }
+
+    .lang-name {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      color: var(--yellow);
+      text-shadow: var(--glow-yellow);
+      margin-bottom: 6px;
+    }
+
+    .lang-level {
+      font-family: 'VT323', monospace;
+      font-size: 18px;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .lang-stars { color: var(--orange); font-size: 14px; letter-spacing: 2px; }
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+    .cv-footer {
+      text-align: center;
+      padding: 24px 0 8px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      color: var(--gray);
+      letter-spacing: 2px;
+      line-height: 2;
+    }
+
+    .insert-coin {
+      color: var(--yellow);
+      text-shadow: var(--glow-yellow);
+      animation: blink 0.9s step-end infinite;
+    }
+
+    .hi-score {
+      position: fixed;
+      top: 16px;
+      right: 20px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      color: var(--yellow);
+      text-shadow: var(--glow-yellow);
+      z-index: 100;
+      line-height: 1.8;
+      text-align: right;
+    }
+
+    /* =====================================================
+       PRINT BUTTON
+    ===================================================== */
+    .print-btn {
+      display: inline-block;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7px;
+      color: var(--bg);
+      background: var(--green);
+      border: none;
+      padding: 10px 18px;
+      cursor: pointer;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+      text-shadow: none;
+      box-shadow: var(--glow-green);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .print-btn:hover {
+      background: var(--cyan);
+      box-shadow: var(--glow-cyan);
+    }
+
+    .print-row {
+      text-align: right;
+      margin-bottom: 4px;
+    }
+
+    /* =====================================================
+       ANIMATIONS
+    ===================================================== */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      91%  { opacity: 1; }
+      92%  { opacity: 0.85; }
+      93%  { opacity: 1; }
+      95%  { opacity: 0.92; }
+      96%  { opacity: 1; }
+    }
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+    @media (max-width: 720px) {
+      .stats-grid  { grid-template-columns: repeat(2, 1fr); }
+      .skills-body { grid-template-columns: 1fr; }
+      .lang-grid   { grid-template-columns: repeat(3, 1fr); }
+      .skill-name  { flex: 0 0 140px; font-size: 16px; }
+      .hi-score    { display: none; }
+      .tools-row   { gap: 8px; }
+    }
+
+    @media (max-width: 480px) {
+      .player-name { font-size: 14px; letter-spacing: 2px; }
+      .contact-row { font-size: 17px; gap: 10px; }
+      .stat-item   { padding: 10px 4px; }
+    }
+
+    /* =====================================================
+       PRINT STYLES — clean ATS-friendly PDF
+    ===================================================== */
+    @media print {
+      body::before, body::after { display: none !important; }
+      .hi-score, .print-row, .print-btn { display: none !important; }
+      .insert-coin { animation: none; opacity: 1; }
+
+      body {
+        background: #fff !important;
+        color: #111 !important;
+        font-family: 'Georgia', serif !important;
+        font-size: 10.5pt !important;
+      }
+
+      .container { padding: 10px 12px; }
+
+      .pixel-box, .pixel-box.cyan, .pixel-box.yellow {
+        border: 1px solid #aaa !important;
+        box-shadow: none !important;
+        background: #fff !important;
+        margin-bottom: 10pt !important;
+        animation: none !important;
+      }
+
+      .section-bar {
+        font-family: Arial, sans-serif !important;
+        font-size: 9pt !important;
+        font-weight: bold !important;
+        color: #111 !important;
+        background: #efefef !important;
+        border-bottom: 1px solid #aaa !important;
+        text-shadow: none !important;
+        letter-spacing: 1px !important;
+        text-transform: uppercase;
+      }
+      .section-bar .icon { display: none; animation: none; }
+
+      .player-select-label, .available-badge { display: none !important; }
+
+      .player-name {
+        font-family: Arial, sans-serif !important;
+        font-size: 22pt !important;
+        color: #111 !important;
+        text-shadow: none !important;
+        letter-spacing: 1px !important;
+      }
+
+      .player-class {
+        font-family: Arial, sans-serif !important;
+        font-size: 10pt !important;
+        color: #333 !important;
+        text-shadow: none !important;
+      }
+
+      .contact-row { color: #111 !important; font-size: 10.5pt !important; font-family: Arial, sans-serif !important; }
+      .contact-row a { color: #111 !important; }
+      .contact-sep { color: #999 !important; }
+
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+      }
+      .stat-item { border-right: 1px solid #ccc !important; background: #fafafa !important; padding: 8pt 4pt !important; }
+      .stat-label { font-family: Arial, sans-serif !important; font-size: 6pt !important; color: #555 !important; }
+      .stat-value { font-family: Arial, sans-serif !important; font-size: 12pt !important; color: #111 !important; text-shadow: none !important; }
+      .stat-sub   { font-family: Arial, sans-serif !important; font-size: 8pt !important; color: #555 !important; }
+
+      .summary-body { color: #111 !important; font-family: Georgia, serif !important; font-size: 10.5pt !important; padding: 10pt 12pt !important; }
+      .summary-body p::before { content: '' !important; }
+
+      .skills-body { padding: 10pt 12pt !important; gap: 12pt 24pt !important; }
+      .skill-category-title { font-family: Arial, sans-serif !important; font-size: 7pt !important; color: #333 !important; text-shadow: none !important; border-bottom: 1px solid #ccc !important; }
+      .skill-name { font-family: Arial, sans-serif !important; font-size: 9pt !important; color: #111 !important; flex: 0 0 160px !important; }
+      .skill-bar-bg { border: 1px solid #bbb !important; }
+      .skill-bar-fill { background: #555 !important; box-shadow: none !important; }
+      .skill-pct { color: #555 !important; font-family: Arial, sans-serif !important; font-size: 8pt !important; }
+      .tools-row { border-top: 1px solid #ccc !important; }
+      .tools-label { font-family: Arial, sans-serif !important; color: #333 !important; font-size: 7pt !important; }
+      .tool-tag { font-family: Arial, sans-serif !important; font-size: 9pt !important; color: #111 !important; border: 1px solid #999 !important; }
+
+      .quest-entry { padding: 10pt 12pt !important; border-bottom: 1px solid #ddd !important; }
+      .quest-company { font-family: Arial, sans-serif !important; font-size: 10pt !important; color: #111 !important; font-weight: bold !important; text-shadow: none !important; }
+      .quest-date { font-family: Arial, sans-serif !important; font-size: 10pt !important; color: #333 !important; }
+      .quest-role { font-family: Arial, sans-serif !important; font-size: 10.5pt !important; color: #333 !important; font-style: italic !important; }
+      .quest-location { font-family: Arial, sans-serif !important; font-size: 9pt !important; color: #555 !important; }
+      .quest-badge { display: none !important; }
+      .quest-bullets li { font-family: Georgia, serif !important; font-size: 10pt !important; color: #111 !important; }
+      .quest-bullets li::before { color: #333 !important; }
+
+      .edu-school { font-family: Arial, sans-serif !important; font-size: 10pt !important; color: #111 !important; font-weight: bold !important; }
+      .edu-degree { font-family: Georgia, serif !important; font-size: 10.5pt !important; color: #333 !important; }
+      .edu-date   { font-family: Arial, sans-serif !important; font-size: 9pt !important; color: #555 !important; }
+
+      .lang-grid { gap: 8pt !important; padding: 10pt 12pt !important; }
+      .lang-item { border: 1px solid #ccc !important; background: #fafafa !important; padding: 8pt !important; }
+      .lang-name  { font-family: Arial, sans-serif !important; font-size: 8pt !important; color: #111 !important; text-shadow: none !important; }
+      .lang-level { font-family: Arial, sans-serif !important; font-size: 9pt !important; color: #333 !important; }
+      .lang-stars { color: #555 !important; }
+
+      .cv-footer  { display: none !important; }
+
+      /* Page break hints */
+      .quest-entry { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HI-SCORE fixed badge -->
+  <div class="hi-score">
+    HI-SCORE<br>
+    12+ YRS EXP
+  </div>
+
+  <div class="container">
+
+    <!-- PRINT BUTTON -->
+    <div class="print-row">
+      <button class="print-btn" onclick="window.print()">[ EXPORT TO PDF ]</button>
+    </div>
+
+    <!-- ================================================
+         HEADER — PLAYER PROFILE
+    ================================================ -->
+    <div class="pixel-box cyan header-box">
+      <div class="header-inner">
+        <div class="player-select-label">--- PLAYER SELECT ---</div>
+        <div class="player-name">MAOR KREICMAN</div>
+        <div class="player-class">
+          VP BUSINESS DEVELOPMENT &nbsp;|&nbsp; CRO &nbsp;|&nbsp; CHIEF BUSINESS OFFICER<br>
+          CLASS: ADTECH EXECUTIVE &nbsp;&nbsp; LEVEL: 12
+        </div>
+        <div class="available-badge">&gt;&gt; AVAILABLE FOR NEW QUEST &lt;&lt;</div>
+        <div class="contact-row">
+          <span>Tbilisi, Georgia</span>
+          <span class="contact-sep">|</span>
+          <a href="tel:+995551024113">+995-551-024-113</a>
+          <span class="contact-sep">|</span>
+          <a href="mailto:maorkreichman@gmail.com">maorkreichman@gmail.com</a>
+          <span class="contact-sep">|</span>
+          <a href="https://www.linkedin.com/in/maor-kreichman/" target="_blank">LinkedIn</a>
+          <span class="contact-sep">|</span>
+          <span>Open to Remote, On-site &amp; Relocation</span>
+        </div>
+      </div>
+
+      <!-- PLAYER STATS -->
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-label">LEVEL</div>
+          <div class="stat-value">12+</div>
+          <div class="stat-sub">Years in AdTech</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">MARKETS</div>
+          <div class="stat-value">8+</div>
+          <div class="stat-sub">Countries Expanded</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">REVENUE</div>
+          <div class="stat-value">$10M</div>
+          <div class="stat-sub">Annual Sales Led</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">CLASS</div>
+          <div class="stat-value" style="font-size:10px;">DSP/SSP</div>
+          <div class="stat-sub">Programmatic Expert</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================
+         MISSION BRIEFING — SUMMARY
+    ================================================ -->
+    <div class="pixel-box">
+      <div class="section-bar"><i class="icon">&#9658;</i> MISSION BRIEFING</div>
+      <div class="summary-body">
+        <p>Results-driven AdTech executive with 12+ years driving business development, revenue growth, and international expansion across demand-side platforms (DSP), supply-side platforms (SSP), and programmatic advertising ecosystems. Co-founding team member and VP International Expansion at Persona.ly — scaling global presence across 8+ markets and contributing to $10M in annual revenue. Expert in strategic partnerships, data monetization, user acquisition, mobile advertising, and go-to-market (GTM) strategy across B2B, B2C, and B2G verticals. Proven track record building high-performing teams, negotiating at C-suite level, and executing multi-year growth strategies. Built and led a proprietary DSP unit from inception. Seeking VP Business Development, CRO, or Chief Business Officer role in AdTech, data, or broader technology.</p>
+      </div>
+    </div>
+
+    <!-- ================================================
+         ARSENAL — SKILLS
+    ================================================ -->
+    <div class="pixel-box yellow">
+      <div class="section-bar"><i class="icon">&#9658;</i> SKILLS &amp; ARSENAL</div>
+      <div class="skills-body">
+
+        <!-- BD & Revenue -->
+        <div>
+          <div class="skill-category-title">BUSINESS DEVELOPMENT &amp; REVENUE</div>
+          <div class="skill-item">
+            <span class="skill-name">Strategic Partnerships</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="96"></div></div>
+            <span class="skill-pct">96</span>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">Revenue Growth &amp; GTM</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="93"></div></div>
+            <span class="skill-pct">93</span>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">International Expansion</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="92"></div></div>
+            <span class="skill-pct">92</span>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">B2B / B2C / B2G Sales</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="90"></div></div>
+            <span class="skill-pct">90</span>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">Account Management</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="88"></div></div>
+            <span class="skill-pct">88</span>
+          </div>
+        </div>
+
+        <!-- AdTech -->
+        <div>
+          <div class="skill-category-title">ADTECH &amp; DIGITAL</div>
+          <div class="skill-item">
+            <span class="skill-name">DSP / SSP Ecosystems</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="91"></div></div>
+            <span class="skill-pct">91</span>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">Programmatic Advertising</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="89"></div></div>
+            <span class="skill-pct">89</span>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">User Acquisition (UA)</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="89"></div></div>
+            <span class="skill-pct">89</span>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">Mobile &amp; App Marketing</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="86"></div></div>
+            <span class="skill-pct">86</span>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">Data Partnerships</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="85"></div></div>
+            <span class="skill-pct">85</span>
+          </div>
+        </div>
+
+        <!-- Leadership -->
+        <div>
+          <div class="skill-category-title">LEADERSHIP &amp; STRATEGY</div>
+          <div class="skill-item">
+            <span class="skill-name">C-Suite Stakeholder Mgmt</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="94"></div></div>
+            <span class="skill-pct">94</span>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">Team Building &amp; Mentoring</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="90"></div></div>
+            <span class="skill-pct">90</span>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">Product Strategy</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="83"></div></div>
+            <span class="skill-pct">83</span>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">P&amp;L Management</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="82"></div></div>
+            <span class="skill-pct">82</span>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">Process Optimization</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="87"></div></div>
+            <span class="skill-pct">87</span>
+          </div>
+        </div>
+
+        <!-- Operations & Cross-functional -->
+        <div>
+          <div class="skill-category-title">OPERATIONS &amp; CROSS-FUNCTIONAL</div>
+          <div class="skill-item">
+            <span class="skill-name">Cross-functional Leadership</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="91"></div></div>
+            <span class="skill-pct">91</span>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">Budget &amp; Forecasting</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="82"></div></div>
+            <span class="skill-pct">82</span>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">Workflow Automation</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="80"></div></div>
+            <span class="skill-pct">80</span>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">Market &amp; Competitor Analysis</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="88"></div></div>
+            <span class="skill-pct">88</span>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">Contract &amp; Legal Mgmt</span>
+            <div class="skill-bar-bg"><div class="skill-bar-fill" data-pct="78"></div></div>
+            <span class="skill-pct">78</span>
+          </div>
+        </div>
+
+        <!-- Tools -->
+        <div class="tools-row">
+          <span class="tools-label">TOOLS:</span>
+          <span class="tool-tag">Monday.com</span>
+          <span class="tool-tag">PowerPoint</span>
+          <span class="tool-tag">Excel</span>
+          <span class="tool-tag">Canva</span>
+          <span class="tool-tag">Claude Code</span>
+          <span class="tool-tag">Visual Studio Code</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================================================
+         QUEST LOG — EXPERIENCE
+    ================================================ -->
+    <div class="pixel-box">
+      <div class="section-bar"><i class="icon">&#9658;</i> QUEST LOG // WORK EXPERIENCE</div>
+
+      <!-- TEKMA -->
+      <div class="quest-entry">
+        <div class="quest-top">
+          <span class="quest-company">TEKMA</span>
+          <span class="quest-date">FEB 2025 — PRESENT</span>
+        </div>
+        <div class="quest-meta">
+          <span class="quest-role">Advisor to CEO, Business Development</span>
+          <span class="quest-location">Dubai (Remote from Tbilisi)</span>
+          <span class="quest-badge badge-active">[ ACTIVE QUEST ]</span>
+        </div>
+        <ul class="quest-bullets">
+          <li>Spearheaded innovative data sourcing initiatives, establishing strategic partnerships that expanded Tekma's data network with mobile SDK and location intelligence capabilities.</li>
+          <li>Led business development efforts to acquire and license high-quality data assets, enhancing Tekma's data management platform and audience segmentation offerings.</li>
+          <li>Negotiated data licensing agreements and evaluated dataset attributes to ensure alignment with client needs and regulatory standards, improving compliance and satisfaction.</li>
+          <li>Represented Tekma in C-suite-level negotiations with leading data companies, facilitating technical and commercial discussions that created new business opportunities.</li>
+          <li>Conducted market research and competitive analysis to identify gaps in data offerings and drive international market expansion.</li>
+          <li>Collaborated cross-functionally to facilitate data integration, pilot projects, and campaign performance optimization, maximizing ROI for clients.</li>
+        </ul>
+      </div>
+
+      <!-- THRIVESTATE -->
+      <div class="quest-entry">
+        <div class="quest-top">
+          <span class="quest-company">THRIVESTATE</span>
+          <span class="quest-date">NOV 2024 — JAN 2025</span>
+        </div>
+        <div class="quest-meta">
+          <span class="quest-role">Strategic Advisor &amp; Interim COO</span>
+          <span class="quest-location">Dubai</span>
+          <span class="quest-badge badge-done">[ COMPLETED ]</span>
+        </div>
+        <ul class="quest-bullets">
+          <li>Conducted comprehensive C-suite and cross-departmental stakeholder audits across multiple international offices to diagnose operational gaps and inefficiencies.</li>
+          <li>Designed and implemented standardized procedures across all business units, driving consistency, efficiency, and scalability across the organization.</li>
+          <li>Led full WorkOS implementation, automating workflows, notifications, and communications to streamline operations and enhance cross-office collaboration.</li>
+          <li>Built HR frameworks including recruitment workflows, onboarding processes, and digital IT inventory directories, integrating seamlessly with Finance processes.</li>
+          <li>Developed P&amp;L statements for individual business units, enabling financial transparency and supporting strategic decision-making at the executive level.</li>
+          <li>Established operations manuals for Holiday Homes and additional departments, optimizing service delivery and cross-functional consistency.</li>
+          <li>Facilitated legal counsel engagement to ensure compliance and risk mitigation across the group's multi-office activities.</li>
+        </ul>
+      </div>
+
+      <!-- OMNI VERSE / DEFINITIO -->
+      <div class="quest-entry">
+        <div class="quest-top">
+          <span class="quest-company">OMNI VERSE &nbsp;/&nbsp; DEFINITIO</span>
+          <span class="quest-date">JUL 2022 — JAN 2025</span>
+        </div>
+        <div class="quest-meta">
+          <span class="quest-role">Founder &amp; Director, DSP Unit</span>
+          <span class="quest-location">Dubai, UAE</span>
+          <span class="quest-badge badge-done">[ COMPLETED ]</span>
+        </div>
+        <ul class="quest-bullets">
+          <li>Founded and built Definitio, the proprietary DSP (Demand-Side Platform) unit of Omni Verse, overseeing all commercial operations from inception — including product strategy, partnerships, new business, advertising budget management, and go-to-market execution.</li>
+          <li>Successfully onboarded 8 key clients with tailored market analysis and strategic presentations, driving their first successful app campaigns and solidifying DSP's position in digital advertising.</li>
+          <li>Streamlined DSP operations and workflows, reducing costs and improving operational efficiency by 30%, contributing to scalable growth.</li>
+          <li>Developed data-driven go-to-market strategies that improved product adoption and expanded market penetration within the mobile app ecosystem.</li>
+          <li>Managed budget planning, financial forecasting, and resource allocation to ensure business sustainability and informed decision-making.</li>
+          <li>Collaborated with R&amp;D teams to define product requirements and roadmaps aligned with client needs and market demands.</li>
+          <li>Built and maintained relationships with C-suite stakeholders, partners, and clients to drive long-term business growth and retention.</li>
+        </ul>
+      </div>
+
+      <!-- PERSONA.LY -->
+      <div class="quest-entry">
+        <div class="quest-top">
+          <span class="quest-company">PERSONA.LY</span>
+          <span class="quest-date">MAY 2014 — JUN 2022</span>
+        </div>
+        <div class="quest-meta">
+          <span class="quest-role">Co-Founding Team Member &amp; VP International Expansion</span>
+          <span class="quest-location">Israel &nbsp;|&nbsp; 8 Years</span>
+          <span class="quest-badge badge-legendary">[ LEGENDARY QUEST ]</span>
+        </div>
+        <ul class="quest-bullets">
+          <li>Joined as a founding team member and helped scale the company from early-stage startup to a global mobile user acquisition (UA) leader with 40+ employees.</li>
+          <li>Drove global expansion into 8+ markets — USA, Russia, Japan, South Korea, China, Indonesia, and India — establishing satellite offices, local partnerships, and market-entry strategies in each region.</li>
+          <li>Architected multi-year growth strategies generating $1.5M in new revenue streams in 2021 and contributing to $10M in total annual sales across diverse products and services.</li>
+          <li>Introduced the first Playable Ad format to top clients, setting a new industry standard in mobile advertising and user acquisition.</li>
+          <li>Built and led a cross-functional commercial team spanning account management, SDRs, and business development professionals — focused on long-term relationships and revenue growth.</li>
+          <li>Executed 3 major company pivots in response to industry disruption — restructuring sales and BD teams, KPIs, and strategy, and consulting with stakeholders to realign product vision and offering.</li>
+          <li>Managed all legal contracts, billing, and collections, reducing financial losses by 15%.</li>
+          <li>Positioned Persona.ly as a trusted partner in mobile user acquisition through C-level pitching, collaboration with leading technology companies, and expanding the client base of app publishers and advertisers.</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- ================================================
+         ACHIEVEMENTS — EDUCATION
+    ================================================ -->
+    <div class="pixel-box">
+      <div class="section-bar"><i class="icon">&#9658;</i> ACHIEVEMENTS // EDUCATION</div>
+      <div class="edu-body">
+        <div class="edu-school">The College of Management Academic Studies &mdash; Rishon LeZion, Israel</div>
+        <div class="edu-degree">BA, Business Management &nbsp;&bull;&nbsp; Major: Marketing &nbsp;&bull;&nbsp; Minor: Information Systems</div>
+        <div class="edu-date">Graduated: June 2012</div>
+      </div>
+    </div>
+
+    <!-- ================================================
+         LANGUAGE PACKS
+    ================================================ -->
+    <div class="pixel-box">
+      <div class="section-bar"><i class="icon">&#9658;</i> LANGUAGE PACKS</div>
+      <div class="lang-grid">
+        <div class="lang-item">
+          <div class="lang-name">ENGLISH</div>
+          <div class="lang-level">Native</div>
+          <div class="lang-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        </div>
+        <div class="lang-item">
+          <div class="lang-name">HEBREW</div>
+          <div class="lang-level">Native</div>
+          <div class="lang-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        </div>
+        <div class="lang-item">
+          <div class="lang-name">RUSSIAN</div>
+          <div class="lang-level">Beginner</div>
+          <div class="lang-stars">&#9733;&#9734;&#9734;&#9734;&#9734;</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="cv-footer">
+      <div class="insert-coin">&gt;&gt;&gt; INSERT COIN TO CONTINUE &lt;&lt;&lt;</div>
+      <div style="margin-top:6px; color: var(--gray);">MAOR KREICMAN &nbsp;&bull;&nbsp; 2025 &nbsp;&bull;&nbsp; ALL RIGHTS RESERVED</div>
+    </div>
+
+  </div><!-- /container -->
+
+  <script>
+    // Animate skill bars on load using IntersectionObserver
+    const fills = document.querySelectorAll('.skill-bar-fill');
+
+    function animateBars(entries) {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const fill = entry.target;
+          const pct = fill.getAttribute('data-pct');
+          fill.style.width = pct + '%';
+          observer.unobserve(fill);
+        }
+      });
+    }
+
+    const observer = new IntersectionObserver(animateBars, { threshold: 0.2 });
+    fills.forEach(f => observer.observe(f));
+  </script>
+
+</body>
+</html>
